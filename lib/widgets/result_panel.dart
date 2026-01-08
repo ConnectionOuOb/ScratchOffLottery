@@ -9,6 +9,7 @@ class ResultPanel extends StatelessWidget {
   final SimulationStep? selectedStep;
   final bool isDark;
   final bool compact;
+  final bool fillHeight;
 
   const ResultPanel({
     super.key,
@@ -17,6 +18,7 @@ class ResultPanel extends StatelessWidget {
     required this.selectedStep,
     required this.isDark,
     this.compact = false,
+    this.fillHeight = false,
   });
 
   String? get _imagePath {
@@ -70,6 +72,7 @@ class ResultPanel extends StatelessWidget {
       imagePath: _imagePath!,
       title: '${strategyInfo.label} · ${sizeInfo.label} · ${stepInfo.label} 次模擬',
       accentColor: strategyInfo.color,
+      fillHeight: fillHeight,
     );
   }
 

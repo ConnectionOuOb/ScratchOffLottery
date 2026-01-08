@@ -95,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedStep: _selectedStep,
                     isDark: widget.isDark,
                     compact: false,
+                    fillHeight: true,
                   ),
                 ),
               ],

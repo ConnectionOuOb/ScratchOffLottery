@@ -5,12 +5,14 @@ class ImageViewer extends StatefulWidget {
   final String imagePath;
   final String title;
   final Color accentColor;
+  final bool fillHeight;
 
   const ImageViewer({
     super.key,
     required this.imagePath,
     required this.title,
     required this.accentColor,
+    this.fillHeight = false,
   });
 
   @override
@@ -96,34 +98,40 @@ class _ImageViewerState extends State<ImageViewer>
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: widget.fillHeight ? MainAxisSize.max : MainAxisSize.min,
       children: [
         _buildToolbar(colors),
-        Container(
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.surfaceVariant.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colors.border),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(11),
-            child: InteractiveViewer(
-              transformationController: _transformController,
-              onInteractionEnd: (_) => _onScaleChanged(),
-              minScale: _minScale,
-              maxScale: _maxScale,
-              child: Image.asset(
-                widget.imagePath,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildErrorWidget(colors);
-                },
-              ),
-            ),
+        widget.fillHeight
+            ? Expanded(child: _buildImageContainer(colors))
+            : _buildImageContainer(colors),
+      ],
+    );
+  }
+
+  Widget _buildImageContainer(AppColors colors) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surfaceVariant.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.border),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(11),
+        child: InteractiveViewer(
+          transformationController: _transformController,
+          onInteractionEnd: (_) => _onScaleChanged(),
+          minScale: _minScale,
+          maxScale: _maxScale,
+          child: Image.asset(
+            widget.imagePath,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildErrorWidget(colors);
+            },
           ),
         ),
-      ],
+      ),
     );
   }
 
