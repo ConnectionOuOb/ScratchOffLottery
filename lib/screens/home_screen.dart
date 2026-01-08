@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Strategy? _selectedStrategy;
   GridSize? _selectedSize;
+  SimulationStep? _selectedStep;
 
   LayoutMode _getLayoutMode(double width) {
     if (width >= 1100) return LayoutMode.desktop;
@@ -91,7 +92,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ResultPanel(
                     selectedStrategy: _selectedStrategy,
                     selectedSize: _selectedSize,
+                    selectedStep: _selectedStep,
+                    isDark: widget.isDark,
                     compact: false,
+                    fillHeight: true,
                   ),
                 ),
               ],
@@ -125,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ResultPanel(
                   selectedStrategy: _selectedStrategy,
                   selectedSize: _selectedSize,
+                  selectedStep: _selectedStep,
+                  isDark: widget.isDark,
                   compact: true,
                 ),
               ),
@@ -151,6 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ResultPanel(
             selectedStrategy: _selectedStrategy,
             selectedSize: _selectedSize,
+            selectedStep: _selectedStep,
+            isDark: widget.isDark,
             compact: true,
           ),
           const SizedBox(height: 20),
@@ -184,6 +192,18 @@ class _HomeScreenState extends State<HomeScreen> {
             onSizeSelected: (size) {
               setState(() {
                 _selectedSize = size;
+              });
+            },
+            compact: compact,
+          ),
+          SizedBox(height: compact ? 20 : 28),
+          const SectionTitle(title: '模擬次數', icon: Icons.speed_outlined),
+          SizedBox(height: compact ? 12 : 16),
+          StepSelector(
+            selectedStep: _selectedStep,
+            onStepSelected: (step) {
+              setState(() {
+                _selectedStep = step;
               });
             },
             compact: compact,

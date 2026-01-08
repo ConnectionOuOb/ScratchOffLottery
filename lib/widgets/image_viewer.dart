@@ -5,12 +5,14 @@ class ImageViewer extends StatefulWidget {
   final String imagePath;
   final String title;
   final Color accentColor;
+  final bool fillHeight;
 
   const ImageViewer({
     super.key,
     required this.imagePath,
     required this.title,
     required this.accentColor,
+    this.fillHeight = false,
   });
 
   @override
@@ -96,37 +98,40 @@ class _ImageViewerState extends State<ImageViewer>
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: widget.fillHeight ? MainAxisSize.max : MainAxisSize.min,
       children: [
         _buildToolbar(colors),
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colors.surfaceVariant.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.border),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(11),
-              child: InteractiveViewer(
-                transformationController: _transformController,
-                onInteractionEnd: (_) => _onScaleChanged(),
-                minScale: _minScale,
-                maxScale: _maxScale,
-                child: Center(
-                  child: Image.asset(
-                    widget.imagePath,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return _buildErrorWidget(colors);
-                    },
-                  ),
-                ),
-              ),
-            ),
+        widget.fillHeight
+            ? Expanded(child: _buildImageContainer(colors))
+            : _buildImageContainer(colors),
+      ],
+    );
+  }
+
+  Widget _buildImageContainer(AppColors colors) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surfaceVariant.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.border),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(11),
+        child: InteractiveViewer(
+          transformationController: _transformController,
+          onInteractionEnd: (_) => _onScaleChanged(),
+          minScale: _minScale,
+          maxScale: _maxScale,
+          child: Image.asset(
+            widget.imagePath,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildErrorWidget(colors);
+            },
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -203,20 +208,23 @@ class _ImageViewerState extends State<ImageViewer>
   }
 
   Widget _buildErrorWidget(AppColors colors) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(
-          Icons.error_outline,
-          color: Color(0xFFF78166),
-          size: 48,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          '無法載入圖片',
-          style: TextStyle(color: colors.textMuted),
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(48),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            color: Color(0xFFF78166),
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '無法載入圖片',
+            style: TextStyle(color: colors.textMuted),
+          ),
+        ],
+      ),
     );
   }
 }
