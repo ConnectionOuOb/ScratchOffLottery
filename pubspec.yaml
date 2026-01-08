@@ -24,3 +24,9 @@ flutter:
 
   assets:
     - assets/
+    - assets/100/light/
+    - assets/100/dark/
+    - assets/10000/light/
+    - assets/10000/dark/
+    - assets/1000000/light/
+    - assets/1000000/dark/

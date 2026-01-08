@@ -6,22 +6,40 @@ import 'image_viewer.dart';
 class ResultPanel extends StatelessWidget {
   final Strategy? selectedStrategy;
   final GridSize? selectedSize;
+  final SimulationStep? selectedStep;
+  final bool isDark;
   final bool compact;
 
   const ResultPanel({
     super.key,
     required this.selectedStrategy,
     required this.selectedSize,
+    required this.selectedStep,
+    required this.isDark,
     this.compact = false,
   });
 
   String? get _imagePath {
-    if (selectedStrategy == null || selectedSize == null) return null;
+    if (selectedStrategy == null || selectedSize == null || selectedStep == null) {
+      return null;
+    }
     final strategyInfo =
         StrategyInfo.all.firstWhere((s) => s.strategy == selectedStrategy);
     final sizeInfo =
         GridSizeInfo.all.firstWhere((s) => s.size == selectedSize);
-    return 'assets/${strategyInfo.assetKey}_${sizeInfo.assetKey}_heatmap.png';
+    final stepInfo =
+        StepInfo.all.firstWhere((s) => s.step == selectedStep);
+    
+    final themeFolder = isDark ? 'dark' : 'light';
+    return 'assets/${stepInfo.assetKey}/$themeFolder/${strategyInfo.assetKey}_${sizeInfo.assetKey}_heatmap.png';
+  }
+
+  String get _missingMessage {
+    final missing = <String>[];
+    if (selectedStrategy == null) missing.add('策略');
+    if (selectedSize == null) missing.add('格數');
+    if (selectedStep == null) missing.add('模擬次數');
+    return '請選擇${missing.join('、')}';
   }
 
   @override
@@ -30,7 +48,6 @@ class ResultPanel extends StatelessWidget {
     final colors = theme.colors;
 
     return Container(
-      constraints: BoxConstraints(minHeight: compact ? 300 : 400),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -45,11 +62,13 @@ class ResultPanel extends StatelessWidget {
         StrategyInfo.all.firstWhere((s) => s.strategy == selectedStrategy);
     final sizeInfo =
         GridSizeInfo.all.firstWhere((s) => s.size == selectedSize);
+    final stepInfo =
+        StepInfo.all.firstWhere((s) => s.step == selectedStep);
 
     return ImageViewer(
-      key: ValueKey(_imagePath),
+      key: ValueKey('$_imagePath-$isDark'),
       imagePath: _imagePath!,
-      title: '${strategyInfo.label} · ${sizeInfo.label} 熱區圖',
+      title: '${strategyInfo.label} · ${sizeInfo.label} · ${stepInfo.label} 次模擬',
       accentColor: strategyInfo.color,
     );
   }
@@ -58,6 +77,7 @@ class ResultPanel extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(compact ? 32 : 48),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -74,7 +94,7 @@ class ResultPanel extends StatelessWidget {
           ),
           SizedBox(height: compact ? 16 : 24),
           Text(
-            '選擇策略與格數',
+            _missingMessage,
             style: TextStyle(
               fontSize: compact ? 16 : 18,
               fontWeight: FontWeight.w600,
@@ -95,4 +115,3 @@ class ResultPanel extends StatelessWidget {
     );
   }
 }
-
